@@ -2,7 +2,6 @@ package com.app.my_project.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.DeleteExchange;
 
 import com.app.my_project.entity.UserEntity;
 import com.app.my_project.repository.UserRepository;
