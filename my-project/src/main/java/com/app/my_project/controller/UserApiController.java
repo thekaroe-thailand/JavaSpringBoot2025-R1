@@ -23,7 +23,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @RequestMapping("/api/users")
 public class UserApiController {
@@ -43,12 +42,12 @@ public class UserApiController {
     public UserEntity createUser(@RequestBody UserEntity user) {
         return userRepository.save(user);
     }
-    
+
     @GetMapping("/{id}")
     public UserEntity getUserById(@PathVariable Long id) {
         return userRepository.findById(id).orElse(null);
     }
-    
+
     @PutMapping("/{id}")
     public UserEntity updateUser(@PathVariable Long id, @RequestBody UserEntity user) {
         UserEntity userToUpdate = userRepository.findById(id).orElse(null);
@@ -84,8 +83,8 @@ public class UserApiController {
 
     private String getSecret() {
         Dotenv dotenv = Dotenv.configure()
-            .directory(System.getProperty("user.dir") + "/my-project")
-            .load();
+                .directory(System.getProperty("user.dir") + "/my-project")
+                .load();
         return dotenv.get("JWT_SECRET");
     }
 
@@ -102,10 +101,10 @@ public class UserApiController {
             UserEntity userForCreateToken = userRepository.findByUsernameAndPassword(u, p);
 
             return JWT.create()
-                .withSubject(String.valueOf(userForCreateToken.getId()))
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .withIssuedAt(new Date())
-                .sign(getAlgorithm());
+                    .withSubject(String.valueOf(userForCreateToken.getId()))
+                    .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                    .withIssuedAt(new Date())
+                    .sign(getAlgorithm());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Error creating token");
         }
@@ -125,22 +124,61 @@ public class UserApiController {
             }
 
             String subject = JWT.require(getAlgorithm())
-                .build()
-                .verify(tokenWithoutBearer)
-                .getSubject();
+                    .build()
+                    .verify(tokenWithoutBearer)
+                    .getSubject();
 
             Long userId = Long.valueOf(subject);
             UserEntity user = userRepository.findById(userId).orElse(null);
 
-            if (user == null) throw new IllegalArgumentException("user not found");
+            if (user == null)
+                throw new IllegalArgumentException("user not found");
 
-            record UserResponse(Long id, String username, String email) {}
+            record UserResponse(Long id, String username, String email) {
+            }
 
             return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Authorization error: " + e.getMessage());
         }
     }
-    
-    
+
+    public Long getUserIdFromToken(String token) {
+        String tokenWithoutBearer = token.replace("Bearer ", "");
+
+        if (tokenWithoutBearer.trim().isEmpty()) {
+            throw new IllegalArgumentException("Token is empty");
+        }
+
+        return Long.valueOf(
+                JWT.require(getAlgorithm())
+                        .build()
+                        .verify(tokenWithoutBearer)
+                        .getSubject());
+    }
+
+    @PostMapping("/admin-edit-profile")
+    public UserEntity adminEditProfile(@RequestHeader("Authorization") String token, @RequestBody UserEntity user) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            UserEntity userToUpdate = userRepository.findById(userId).orElse(null);
+
+            if (userToUpdate == null)
+                throw new IllegalArgumentException("User not found");
+
+            userToUpdate.setUsername(user.getUsername());
+            userToUpdate.setEmail(user.getEmail());
+
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                userToUpdate.setPassword(user.getPassword());
+            }
+
+            userRepository.save(userToUpdate);
+
+            return userToUpdate;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("update user error: " + e.getMessage());
+        }
+    }
+
 }

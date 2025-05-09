@@ -164,13 +164,43 @@ public class UserApiController {
         userToUpdate.setUsername(user.getUsername());
         userToUpdate.setEmail(user.getEmail());
 
-        if (user.getPassword() != null) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userToUpdate.setPassword(user.getPassword());
         }
 
         userRepository.save(userToUpdate);
 
         return userToUpdate;
+    }
+
+    @PostMapping("/admin-create")
+    public UserEntity adminCreate(@RequestHeader("Authorization") String token, @RequestBody UserEntity user) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            UserEntity userToCreate = userRepository.findById(userId).orElse(null);
+
+            if (userToCreate == null) throw new IllegalArgumentException("User not found");
+
+            userRepository.save(user);
+
+            return user;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Authentication error: " + e.getMessage());
+        }   
+    }
+
+    @DeleteMapping("/admin-delete/{id}")
+    public void adminDelete(@RequestHeader("Authorization") String token, @PathVariable Long id) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            UserEntity userToDelete = userRepository.findById(userId).orElse(null);
+
+            if (userToDelete == null) throw new IllegalArgumentException("User not found");
+            
+            userRepository.deleteById(id);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Authentication error: " + e.getMessage());
+        }
     }
 }
 
