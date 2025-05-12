@@ -181,4 +181,30 @@ public class UserApiController {
         }
     }
 
+    @PostMapping("/admin-create")
+    public UserEntity adminCreate(
+            @RequestHeader("Authorization") String token,
+            @RequestBody UserEntity user) {
+        try {
+            userRepository.save(user);
+            return user;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Authentication error " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/admin-delete/{id}")
+    public void adminDelete(@RequestHeader("Authorization") String token, @PathVariable Long id) {
+        try {
+            UserEntity userToDelete = userRepository.findById(id).orElse(null);
+
+            if (userToDelete == null)
+                throw new IllegalArgumentException("User not found");
+
+            userRepository.deleteById(id);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Authentication error " + e.getMessage());
+        }
+    }
+
 }

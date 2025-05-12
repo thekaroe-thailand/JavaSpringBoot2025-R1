@@ -108,7 +108,7 @@ public class UserApiController {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Error creating token");
         }
-    }    
+    }
 
     @GetMapping("/admin-info")
     public Object adminInfo(@RequestHeader("Authorization") String token) {
