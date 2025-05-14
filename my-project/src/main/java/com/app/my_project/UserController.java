@@ -5,15 +5,11 @@ import org.springframework.web.bind.annotation.*;
 
 import com.app.models.TokenRequest;
 import com.app.models.UserModel;
-import com.auth0.*;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.*;
 import com.auth0.jwt.exceptions.*;
 import io.github.cdimascio.dotenv.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/jwt")
@@ -22,8 +18,8 @@ public class UserController {
 
     public String getSecret() {
         Dotenv dotenv = Dotenv.configure()
-            .directory(System.getProperty("user.dir") + "/my-project")
-            .load();
+                .directory(System.getProperty("user.dir") + "/my-project")
+                .load();
         return dotenv.get("JWT_SECRET");
     }
 
@@ -34,17 +30,16 @@ public class UserController {
     @PostMapping("/create")
     public String createToken(@RequestBody UserModel user) {
         UserModel userForCreateToken = new UserModel(
-            user.getId(),
-            user.getName(),
-            user.getUsername(),
-            user.getPassword()
-        );
+                user.getId(),
+                user.getName(),
+                user.getUsername(),
+                user.getPassword());
 
         return JWT.create()
-            .withSubject(String.valueOf(userForCreateToken.getId()))
-            .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .withIssuedAt(new Date())
-            .sign(getAlgorithm());
+                .withSubject(String.valueOf(userForCreateToken.getId()))
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .withIssuedAt(new Date())
+                .sign(getAlgorithm());
     }
 
     @PostMapping("/check")
@@ -58,5 +53,5 @@ public class UserController {
             return "Token is invalid or expired: " + e.getMessage();
         }
     }
-    
+
 }
