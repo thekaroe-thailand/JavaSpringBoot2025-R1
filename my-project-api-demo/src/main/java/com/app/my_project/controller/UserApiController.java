@@ -100,6 +100,10 @@ public class UserApiController {
 
             UserEntity userForCreateToken = userRepository.findByUsernameAndPassword(u, p);
 
+            if (userForCreateToken == null) {
+                throw new IllegalArgumentException("User not found");
+            }
+
             return JWT.create()
                 .withSubject(String.valueOf(userForCreateToken.getId()))
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
