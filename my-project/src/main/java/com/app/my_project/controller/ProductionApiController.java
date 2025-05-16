@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/productions")
-public class ProductionController {
+public class ProductionApiController {
     private final ProductionRepository productionRepository;
 
-    public ProductionController(ProductionRepository productionRepository) {
+    public ProductionApiController(ProductionRepository productionRepository) {
         this.productionRepository = productionRepository;
     }
 

@@ -34,7 +34,7 @@ public class MaterialEntity {
         return unitName;
     }
 
-    public void getUnitName(String unitName) {
+    public void setUnitName(String unitName) {
         this.unitName = unitName;
     }
 
