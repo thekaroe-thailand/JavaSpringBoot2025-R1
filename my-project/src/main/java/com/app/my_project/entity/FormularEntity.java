@@ -2,10 +2,10 @@ package com.app.my_project.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GenerationType;;
 
 @Entity
 public class FormularEntity {
@@ -37,7 +37,7 @@ public class FormularEntity {
         return name;
     }
 
-    public void setName(String name) {
+    public void setNmae(String name) {
         this.name = name;
     }
 
@@ -51,7 +51,7 @@ public class FormularEntity {
 
     public String getUnit() {
         return unit;
-    }   
+    }
 
     public void setUnit(String unit) {
         this.unit = unit;
@@ -62,7 +62,7 @@ public class FormularEntity {
     }
 
     public void setMaterial(MaterialEntity material) {
-        this.material = material;   
+        this.material = material;
     }
 
     public ProductionEntity getProduction() {
