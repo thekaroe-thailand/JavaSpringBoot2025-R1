@@ -3,7 +3,7 @@ package com.app.my_project.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.GenerationType;;
+import jakarta.persistence.GenerationType;
 
 @Entity
 public class ProductionEntity {

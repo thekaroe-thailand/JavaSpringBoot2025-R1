@@ -21,9 +21,9 @@ public class FormularApiController {
     @Autowired
     private FormularRepository formularRepository;
 
-    @GetMapping
-    public List<FormularEntity> getAllFormulars() {
-        return formularRepository.findAll();
+    @GetMapping("/{productId}")
+    public List<FormularEntity> getAllFormulars(@PathVariable Long productId) {
+        return formularRepository.findAllByProductionIdOrderByIdDesc(productId);
     }
 
     @PostMapping
@@ -38,10 +38,10 @@ public class FormularApiController {
     ) {
         FormularEntity formular = formularRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Formular not found"));
-        formular.setName(formularEntity.getName());
         formular.setQty(formularEntity.getQty());
         formular.setUnit(formularEntity.getUnit());
         formular.setMaterial(formularEntity.getMaterial());
+        formular.setProduction(formularEntity.getProduction());
 
         return formularRepository.save(formular);
     }

@@ -13,10 +13,9 @@ public class FormularEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
     private int qty;
     private String unit;
-
+    
     @ManyToOne
     @JoinColumn(name = "material_id")
     private MaterialEntity material;
@@ -33,14 +32,6 @@ public class FormularEntity {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getQty() {
         return qty;
     }
@@ -55,7 +46,7 @@ public class FormularEntity {
 
     public void setUnit(String unit) {
         this.unit = unit;
-    }
+    } 
 
     public MaterialEntity getMaterial() {
         return material;
