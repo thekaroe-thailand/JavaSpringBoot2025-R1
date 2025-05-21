@@ -21,9 +21,9 @@ public class ProductionLogApiController {
     @Autowired
     private ProductionLogRepository productionLogRepository;
 
-    @GetMapping
-    public List<ProductionLogEntity> getAllProductionLogs() {
-        return productionLogRepository.findAll();
+    @GetMapping("/{productionId}")
+    public List<ProductionLogEntity> getAllProductionLogs(@PathVariable Long productionId) {
+        return productionLogRepository.findAllByProductionIdOrderByIdDesc(productionId);
     }
 
     @PostMapping
@@ -35,7 +35,13 @@ public class ProductionLogApiController {
     public ProductionLogEntity updateProductionLog(
         @PathVariable Long id, 
         @RequestBody ProductionLogEntity productionLog) {
-        return productionLogRepository.save(productionLog);
+        ProductionLogEntity existingProductionLog = productionLogRepository.findById(id)    
+            .orElseThrow(() -> new RuntimeException("Production log not found"));
+        existingProductionLog.setProduction(productionLog.getProduction());
+        existingProductionLog.setRemark(productionLog.getRemark());
+        existingProductionLog.setQty(productionLog.getQty());
+        
+        return productionLogRepository.save(existingProductionLog);
     }
 
     @DeleteMapping("/{id}")

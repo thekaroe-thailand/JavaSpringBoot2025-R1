@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/production-log")
+@RequestMapping("/api/production-logs")
 public class ProductionLogApiController {
     @Autowired
     private ProductionLogRepository productionLogRepository;
 
-    @GetMapping
-    public List<ProductionLogEntity> getAllProductionLog() {
-        return productionLogRepository.findAll();
+    @GetMapping("/{productionId}")
+    public List<ProductionLogEntity> getAllProductionLog(@PathVariable Long productionId) {
+        return productionLogRepository.findAllByProductionIdOrderByIdDesc(productionId);
     }
 
     @PostMapping
@@ -37,7 +37,13 @@ public class ProductionLogApiController {
     public ProductionLogEntity updateProductionLog(
             @PathVariable Long id,
             @RequestBody ProductionLogEntity productionLog) {
-        return productionLogRepository.save(productionLog);
+        ProductionLogEntity p = productionLogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Production log not found"));
+        p.setProduction(productionLog.getProduction());
+        p.setRemark(productionLog.getRemark());
+        p.setQty(productionLog.getQty());
+
+        return productionLogRepository.save(p);
     }
 
     @DeleteMapping("/{id}")
