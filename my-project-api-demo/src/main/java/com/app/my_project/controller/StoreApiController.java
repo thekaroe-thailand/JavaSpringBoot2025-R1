@@ -1,6 +1,8 @@
 package com.app.my_project.controller;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,6 +51,19 @@ public class StoreApiController {
         storeRepository.deleteById(id);
     }
     
+    // import data
+    @GetMapping("/data-for-import/{id}")
+    public Map<String, Object> getDataForImport(@PathVariable Long id) {
+        List<Object[]> rows = storeRepository.findProductionSummary(id);
+        Object[] row = rows.get(0); 
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("id", row[0]);
+        result.put("name", row[1]);
+        result.put("totalProductionLog", row[2]);
+        result.put("totalProductionLoss", row[3]);
+
+        return result;
+    }
 }
 
 
