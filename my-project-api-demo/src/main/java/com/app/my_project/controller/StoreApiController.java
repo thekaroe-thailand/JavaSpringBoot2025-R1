@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.my_project.entity.StoreEntity;
+import com.app.my_project.entity.StoreImportEntity;
+import com.app.my_project.repository.StoreImportRepository;
 import com.app.my_project.repository.StoreRepository;
 
 @RestController
@@ -22,6 +24,9 @@ import com.app.my_project.repository.StoreRepository;
 public class StoreApiController {
     @Autowired
     private StoreRepository storeRepository;
+
+    @Autowired
+    private StoreImportRepository storeImportRepository;
 
     @GetMapping
     public List<StoreEntity> getStore() {
@@ -63,6 +68,23 @@ public class StoreApiController {
         result.put("totalProductionLoss", row[3]);
 
         return result;
+    }
+
+    @PostMapping("/import")
+    public StoreImportEntity importData(
+        @RequestBody StoreImportEntity storeImportEntity
+    ) {
+        return storeImportRepository.save(storeImportEntity);
+    }
+
+    @GetMapping("/import/{storeId}")
+    public List<StoreImportEntity> getImportData(@PathVariable Long storeId) {
+        return storeImportRepository.findByStoreId(storeId);
+    }
+
+    @DeleteMapping("/import/{id}")
+    public void deleteImportData(@PathVariable Long id) {
+        storeImportRepository.deleteById(id);
     }
 }
 
