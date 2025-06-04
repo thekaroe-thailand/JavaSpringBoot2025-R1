@@ -1,13 +1,14 @@
 package com.app.my_project.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class TransferStockEntity {
@@ -22,6 +23,10 @@ public class TransferStockEntity {
     @ManyToOne
     @JoinColumn(name = "to_store_id")
     private StoreEntity toStore;
+
+    @ManyToOne
+    @JoinColumn(name = "production_id")
+    private ProductionEntity production;
 
     private Integer quantity;
     private String remark;
@@ -73,5 +78,13 @@ public class TransferStockEntity {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public ProductionEntity getProduction() {
+        return production;
+    }
+
+    public void setProduction(ProductionEntity production) {
+        this.production = production;
     }
 }
