@@ -13,6 +13,7 @@ public class ProductionEntity {
 
     private String name;
     private String detail;
+    private Double price;
 
     public Long getId() {
         return id;
@@ -36,5 +37,13 @@ public class ProductionEntity {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

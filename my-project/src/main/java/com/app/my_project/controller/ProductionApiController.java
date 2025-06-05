@@ -49,6 +49,7 @@ public class ProductionApiController {
 
         productionToUpdate.setName(production.getName());
         productionToUpdate.setDetail(production.getDetail());
+        productionToUpdate.setPrice(production.getPrice());
 
         return productionRepository.save(productionToUpdate);
     }
@@ -56,5 +57,15 @@ public class ProductionApiController {
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Long id) {
         productionRepository.deleteById(id);
+    }
+
+    @PutMapping("/updatePrice/{id}")
+    public void updatePrice(
+            @PathVariable Long id,
+            @RequestBody ProductionEntity productionEntity) {
+        ProductionEntity p = productionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("production not found"));
+        p.setPrice(productionEntity.getPrice());
+        productionRepository.save(p);
     }
 }
