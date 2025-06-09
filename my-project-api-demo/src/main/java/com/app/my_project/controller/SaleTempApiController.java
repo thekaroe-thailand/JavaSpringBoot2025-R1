@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/SaleTemp")
@@ -41,21 +39,6 @@ public class SaleTempApiController {
         ProductionEntity productionEntity = productionRepository.findById(productionId)
                 .orElseThrow(() -> new RuntimeException("production not found"));
 
-        Long userIdValue = Long.parseLong(userId);
-
-        // old SaleTemp
-        SaleTempEntity oldSaleTemp = saleTempRepository.findByProductionIdAndUserId(
-            productionId, 
-            userIdValue
-        );
-
-        // update record
-        if (oldSaleTemp != null) {
-            oldSaleTemp.setQty(oldSaleTemp.getQty() + 1);
-            return saleTempRepository.save(oldSaleTemp);
-        }
-
-        // new record
         saleTemp.setQty(1);
         saleTemp.setUserId(Integer.parseInt(userId));
         saleTemp.setPrice(productionEntity.getPrice());
@@ -69,27 +52,7 @@ public class SaleTempApiController {
         UserService userService = new UserService();
         Long userId = userService.getUserIdFromToken(token);
 
-        return saleTempRepository.findAllByUserIdOrderByIdDesc(userId);
+        return saleTempRepository.findAllByUserId(userId);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@RequestHeader("Authorization") String token, @PathVariable Long id) {
-        UserService userService = new UserService();
-        Long userId = userService.getUserIdFromToken(token);
-
-        if (userId == null) {
-            throw new RuntimeException("user not found");
-        }
-
-        saleTempRepository.deleteById(id);
-    }
-
-    @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody SaleTempEntity saleTemp) {
-        SaleTempEntity saleTempEntity = saleTempRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("sale temp not found"));
-
-        saleTempEntity.setQty(saleTemp.getQty());
-        saleTempRepository.save(saleTempEntity);
-    }
 }

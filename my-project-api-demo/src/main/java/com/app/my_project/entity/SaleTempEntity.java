@@ -2,25 +2,24 @@ package com.app.my_project.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.GenerationType;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.OneToOne;
 
 @Entity
-public class ProductionLossEntity {
+public class SaleTempEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "production_id")
     private ProductionEntity production;
-    private String remark;
-    private Double qty;
-    private LocalDateTime createdAt;
+
+    private int qty;
+    private int userId;
+    private double price;
 
     public Long getId() {
         return id;
@@ -38,28 +37,27 @@ public class ProductionLossEntity {
         this.production = production;
     }
 
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Double getQty() {
+    public int getQty() {
         return qty;
     }
 
-    public void setQty(Double qty) {
+    public void setQty(int qty) {
         this.qty = qty;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }
