@@ -8,5 +8,6 @@ import com.app.my_project.entity.SaleTempEntity;
 
 public interface SaleTempRepository extends JpaRepository<SaleTempEntity, Long> {
     List<SaleTempEntity> findAllByUserIdOrderByIdDesc(Long userId);
+
     SaleTempEntity findByProductionIdAndUserId(Long productionId, Long userId);
 }

@@ -7,8 +7,8 @@ import jakarta.persistence.Id;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 public class BillSaleEntity {
@@ -17,7 +17,7 @@ public class BillSaleEntity {
     private Long id;
 
     @ManyToOne
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 
     private Double inputMoney;
