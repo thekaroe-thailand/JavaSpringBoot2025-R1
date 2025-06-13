@@ -3,6 +3,7 @@ package com.app.my_project.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -12,6 +13,9 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.app.my_project.repository.BillSaleRepository;
 import com.app.my_project.entity.BillSaleEntity;
+import com.app.my_project.entity.BillSaleDetailEntity;
+import com.app.my_project.repository.BillSaleDetailRepository;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/report")
@@ -19,6 +23,9 @@ public class ReportApiController {
 
     @Autowired
     private BillSaleRepository billSaleRepository;
+
+    @Autowired
+    private BillSaleDetailRepository billSaleDetailRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -59,5 +66,26 @@ public class ReportApiController {
     @GetMapping("/bill-sales")
     public List<BillSaleEntity> billSalePerMonth() {
         return billSaleRepository.findAll();
+    }
+
+    @GetMapping("/bill-sale-detail/{billSaleId}")
+    public List<BillSaleDetailEntity> billSaleDetail(@PathVariable Long billSaleId) {
+        return billSaleDetailRepository.findAllByBillSaleId(billSaleId);
+    }
+
+    @DeleteMapping("/bill-sale/{billSaleId}")
+    public void deleteBillSale(@PathVariable Long billSaleId) {
+        BillSaleEntity billSale = billSaleRepository.findById(billSaleId)
+                .orElseThrow(() -> new RuntimeException("Bill sale not found"));
+        billSale.setStatus("cancel");
+        billSaleRepository.save(billSale);
+    }
+
+    @PutMapping("/bill-sale/{billSaleId}")
+    public void updateBillSale(@PathVariable Long billSaleId) {
+        BillSaleEntity billSale = billSaleRepository.findById(billSaleId)
+                .orElseThrow(() -> new RuntimeException("Bill sale not found"));
+        billSale.setStatus("paid");
+        billSaleRepository.save(billSale);
     }
 }
