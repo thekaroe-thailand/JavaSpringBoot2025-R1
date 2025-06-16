@@ -92,18 +92,22 @@ public class UserApiController {
     }
 
     @PostMapping("/admin-signin")
-    public String adminSigin(@RequestBody UserEntity user) {
+    public Object adminSigin(@RequestBody UserEntity user) {
         try {
             String u = user.getUsername();
             String p = user.getPassword();
 
             UserEntity userForCreateToken = userRepository.findByUsernameAndPassword(u, p);
 
-            return JWT.create()
+            String token = JWT.create()
                     .withSubject(String.valueOf(userForCreateToken.getId()))
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                     .withIssuedAt(new Date())
                     .sign(getAlgorithm());
+            String role = userForCreateToken.getRole();
+            record UserResponse(String token, String role) {
+            }
+            return new UserResponse(token, role);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Error creating token");
         }
@@ -133,10 +137,12 @@ public class UserApiController {
             if (user == null)
                 throw new IllegalArgumentException("user not found");
 
-            record UserResponse(Long id, String username, String email) {
+            String role = user.getRole();
+
+            record UserResponse(Long id, String username, String email, String role) {
             }
 
-            return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
+            return new UserResponse(user.getId(), user.getUsername(), user.getEmail(), role);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Authorization error: " + e.getMessage());
         }
@@ -171,6 +177,31 @@ public class UserApiController {
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                 userToUpdate.setPassword(user.getPassword());
             }
+
+            userRepository.save(userToUpdate);
+
+            return userToUpdate;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("update user error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin-update-profile")
+    public UserEntity adminUpdateProfile(@RequestHeader("Authorization") String token, @RequestBody UserEntity user) {
+        try {
+            UserEntity userToUpdate = userRepository.findById(user.getId()).orElse(null);
+
+            if (userToUpdate == null)
+                throw new IllegalArgumentException("User not found");
+
+            userToUpdate.setUsername(user.getUsername());
+            userToUpdate.setEmail(user.getEmail());
+
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                userToUpdate.setPassword(user.getPassword());
+            }
+
+            userToUpdate.setRole(user.getRole());
 
             userRepository.save(userToUpdate);
 
