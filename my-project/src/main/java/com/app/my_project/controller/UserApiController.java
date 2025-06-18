@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import com.app.my_project.annotation.RequireAuth;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
@@ -26,13 +27,14 @@ import io.github.cdimascio.dotenv.Dotenv;
 @RequestMapping("/api/users")
 public class UserApiController {
     private final UserRepository userRepository;
-    private static final long EXPIRATION_TIME = 60 * 60 * 1000 * 24 * 7; // 1 week
+    private static final long EXPIRATION_TIME = 60 * 60 * 1000 * 24 * 7;
 
     public UserApiController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @GetMapping
+    @RequireAuth
     public List<UserEntity> getAlUsers() {
         return userRepository.findAll();
     }

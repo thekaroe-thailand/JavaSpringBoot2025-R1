@@ -16,6 +16,8 @@ import com.app.my_project.entity.BillSaleEntity;
 import com.app.my_project.entity.BillSaleDetailEntity;
 import com.app.my_project.repository.BillSaleDetailRepository;
 import org.springframework.web.bind.annotation.PutMapping;
+import com.app.my_project.repository.ProductionRepository;
+import com.app.my_project.entity.ProductionEntity;
 
 @RestController
 @RequestMapping("/api/report")
@@ -26,6 +28,9 @@ public class ReportApiController {
 
     @Autowired
     private BillSaleDetailRepository billSaleDetailRepository;
+
+    @Autowired
+    private ProductionRepository productionRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -88,4 +93,55 @@ public class ReportApiController {
         billSale.setStatus("paid");
         billSaleRepository.save(billSale);
     }
+
+    @GetMapping("/dashboard")
+    @SuppressWarnings("unchecked")
+    public Object dashboard() {
+        try {
+            // การผลิตทั้งหมด
+            String sql = """
+                        SELECT
+                            COALESCE(SUM(production_log_entity.qty), 0) AS sum_qty
+                        FROM production_log_entity
+                    """;
+
+            Query query = entityManager.createNativeQuery(sql);
+            List<Object[]> results = query.getResultList();
+            Object sumQty = results.get(0);
+
+            // ยอดขายทั้งหมด
+            sql = """
+                    SELECT
+                        COALESCE(SUM(bsd.quantity * bsd.price), 0) AS sum_income
+                    FROM bill_sale_detail_entity bsd
+                    LEFT JOIN bill_sale_entity bse ON bsd.bill_sale_id = bse.id
+                    WHERE bse.status = 'paid'
+                    """;
+
+            query = entityManager.createNativeQuery(sql);
+            results = query.getResultList();
+            Object sumIncome = results.get(0);
+
+            // รายการสินค้าทั้งหมด
+            int totalProduct = productionRepository.findAll().size();
+
+            // loss ทั้งหมด
+            sql = """
+                    SELECT
+                        SUM(production_loss_entity.qty) AS sum_qty
+                    FROM production_loss_entity
+                    """;
+            query = entityManager.createNativeQuery(sql);
+            results = query.getResultList();
+            Object sumLoss = results.get(0);
+
+            record Response(Object sumQty, Object sumIncome, int totalProduct, Object sumLoss) {
+            }
+            return new Response(sumQty, sumIncome, totalProduct, sumLoss);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
 }
